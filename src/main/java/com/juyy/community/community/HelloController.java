@@ -1,6 +1,7 @@
 package com.juyy.community.community;
 
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
 /**
@@ -14,7 +15,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 public class HelloController {
 
     @GetMapping("/index")
-    public String hello() {
+    public String hello(Model model) {
+        model.addAttribute("aa", 2<<2);
         return "index";
     }
 }
