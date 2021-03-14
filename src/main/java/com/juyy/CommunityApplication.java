@@ -1,4 +1,4 @@
-package com.juyy.community.community;
+package com.juyy;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
