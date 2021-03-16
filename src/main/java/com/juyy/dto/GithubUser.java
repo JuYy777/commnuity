@@ -9,16 +9,27 @@ package com.juyy.dto;
  */
 public class GithubUser {
     private String name;
-    private Long id;
-    private String bio;
 
     public String getName() {
         return name;
     }
 
+    @Override
+    public String toString() {
+        return "GithubUser{" +
+                "login='" + name + '\'' +
+                ", id=" + id +
+                ", bio='" + bio + '\'' +
+                '}';
+    }
+
     public void setName(String name) {
         this.name = name;
     }
+
+    private Long id;
+    private String bio;
+
 
     public Long getId() {
         return id;
