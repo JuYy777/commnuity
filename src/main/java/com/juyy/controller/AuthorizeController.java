@@ -2,6 +2,8 @@ package com.juyy.controller;
 
 import com.juyy.dto.AccessTokenDTO;
 import com.juyy.dto.GithubUser;
+import com.juyy.mapper.UserMapper;
+import com.juyy.model.User;
 import com.juyy.provider.GithubProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -10,6 +12,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.UUID;
 
 /**
  * @BelongsProject: community
@@ -31,6 +34,9 @@ public class AuthorizeController {
     @Value("${github.redirect.uri}")
     private String redirectUri;
 
+    @Autowired
+    private UserMapper userMapper;
+
     @GetMapping("/callback")
     public String callback(@RequestParam(name = "code") String code,
                            @RequestParam(name = "state") String state,
@@ -42,12 +48,19 @@ public class AuthorizeController {
         accessTokenDTO.setRedirect_uri(redirectUri);
         accessTokenDTO.setClient_secret(clientSecret);
         String accessToken = githubProvider.getAccessToken(accessTokenDTO);//获取到accessToken
-        GithubUser user = githubProvider.getUser(accessToken);//使用access获取到用户信息
-        System.out.println("用户名:" + user.getName());
+        GithubUser githubUser = githubProvider.getUser(accessToken);//使用access获取到用户信息
+        System.out.println("用户名:" + githubUser.getName());
 
-        if (user.getName() != null) {
+        if (githubUser.getName() != null) {
             //登录成功 设置cokie和session
-            request.getSession().setAttribute("user", user);
+            User user = new User();
+            user.setName(githubUser.getName());
+            user.setAccountId(String.valueOf(githubUser.getId()));
+            user.setToken(UUID.randomUUID().toString());
+            user.setGmtCreate(System.currentTimeMillis());
+            user.setGmtModified(user.getGmtCreate());
+            userMapper.insert(user);
+            request.getSession().setAttribute("user", githubUser);
             return "redirect:/";
         } else {
             //登录失败  跳转回index页面
